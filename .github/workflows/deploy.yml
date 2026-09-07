@@ -1,0 +1,32 @@
+name: Deploy GoClaw to VPS
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy to Production VPS
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Execute Remote Deployment via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          script_stop: true
+          script: |
+            echo "Starting GoClaw deployment on VPS..."
+            if [ ! -d "/opt/goclaw" ]; then
+              echo "Error: /opt/goclaw does not exist! Please run setup-vps.sh first."
+              exit 1
+            fi
+            chmod +x /opt/goclaw/scripts/deploy.sh
+            /opt/goclaw/scripts/deploy.sh

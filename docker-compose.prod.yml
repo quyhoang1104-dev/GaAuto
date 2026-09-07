@@ -1,0 +1,27 @@
+# =====================================================================
+# Production Override for GoClaw
+# Domain: totsystem.com (VPS: 65.86.32.120)
+# =====================================================================
+# Ports are bound strictly to 127.0.0.1 (localhost) to protect against
+# unauthorized direct internet access. All external traffic must pass
+# through Nginx with SSL Let's Encrypt (https://totsystem.com).
+
+services:
+  goclaw:
+    ports:
+      - "127.0.0.1:18790:18790"
+    restart: always
+    environment:
+      - GOCLAW_HOST=0.0.0.0
+      - GOCLAW_PORT=18790
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O - http://127.0.0.1:18790/ || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  postgres:
+    ports:
+      - "127.0.0.1:5432:5432"
+    restart: always
