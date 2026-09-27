@@ -1,10 +1,10 @@
 # =====================================================================
 # Production Override for GoClaw
-# Domain: totsystem.com (VPS: 65.86.32.120)
+# Domain: hoangquy.name.vn (VPS: 65.86.32.120)
 # =====================================================================
 # Ports are bound strictly to 127.0.0.1 (localhost) to protect against
 # unauthorized direct internet access. All external traffic must pass
-# through Nginx with SSL Let's Encrypt (https://totsystem.com).
+# through Nginx with SSL Let's Encrypt (https://hoangquy.name.vn).
 
 services:
   goclaw:

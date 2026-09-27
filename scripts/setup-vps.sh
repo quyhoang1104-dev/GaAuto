@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 # =====================================================================
 # setup-vps.sh — One-Click Setup Script for GoClaw on VPS
-# Target Domain: totsystem.com
+# Target Domain: hoangquy.name.vn
 # Target VPS IP: 65.86.32.120
-# Repo: https://github.com/HoangQuy1104/AI-tr-l-.git
+# Repo: https://github.com/quyhoang1104-dev/GaAuto.git
 # =====================================================================
 set -euo pipefail
 
-DOMAIN="totsystem.com"
+DOMAIN="hoangquy.name.vn"
 APP_DIR="/opt/goclaw"
-REPO_URL="https://github.com/HoangQuy1104/AI-tr-l-.git"
+REPO_URL="https://github.com/quyhoang1104-dev/GaAuto.git"
 
 echo "========================================================"
 echo "    BẮT ĐẦU CÀI ĐẶT GOCLAW TRÊN VPS ($DOMAIN)"
