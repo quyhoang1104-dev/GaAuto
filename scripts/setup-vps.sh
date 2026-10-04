@@ -78,6 +78,37 @@ fi
 # Lấy token để hiển thị sau khi hoàn tất
 GATEWAY_TOKEN=$(grep -E "^GOCLAW_GATEWAY_TOKEN=" "$APP_DIR/.env" | cut -d'=' -f2-)
 
+# 6b. Auto-configure Telegram Bot & DuckDuckGo Search in config.json
+echo "--> [6b/8] Cấu hình Telegram Bot (@Hoangquy1104 allowlist) & Tìm kiếm DuckDuckGo..."
+cat << 'EOF' > "$APP_DIR/config.json"
+{
+  "gateway": {
+    "host": "0.0.0.0",
+    "port": 18790
+  },
+  "channels": {
+    "telegram": {
+      "enabled": true,
+      "token": "8509298177:AAEFohJJLYoVxsN8ilmS2Gok8Qf00WEfp3A",
+      "dm_policy": "allowlist",
+      "allow_from": [
+        "@Hoangquy1104"
+      ],
+      "group_policy": "disabled",
+      "dm_stream": true
+    }
+  },
+  "tools": {
+    "profile": "full",
+    "allow": [
+      "group:web",
+      "web_search",
+      "web_fetch"
+    ]
+  }
+}
+EOF
+
 # 7. Configure Nginx & SSL Let's Encrypt
 echo "--> [7/8] Cấu hình Nginx và chứng chỉ SSL cho $DOMAIN..."
 NGINX_CONF="/etc/nginx/sites-available/$DOMAIN"
@@ -130,11 +161,12 @@ echo "    TRIỂN KHAI GOCLAW HOÀN TẤT THÀNH CÔNG!"
 echo "========================================================"
 echo " Domain:           https://$DOMAIN"
 echo " Gateway Token:    $GATEWAY_TOKEN"
+echo " Telegram Bot:     Đã kích hoạt Token (Cho phép duy nhất @Hoangquy1104)"
+echo " DuckDuckGo:       Đã bật tự động"
 echo " Thư mục cài đặt:  $APP_DIR"
 echo " Trạng thái:       $(docker compose -f docker-compose.yml -f docker-compose.postgres.yml -f docker-compose.prod.yml ps --format 'table {{.Service}}\t{{.Status}}')"
 echo ""
 echo "👉 BƯỚC TIẾP THEO:"
-echo "1. Mở trình duyệt truy cập: https://$DOMAIN"
-echo "2. Dán mã Gateway Token ở trên để đăng nhập vào GoClaw Dashboard."
-echo "3. Vào Settings -> Providers để cấu hình API Key LLM mà bạn muốn dùng."
+echo "1. Mở ứng dụng Telegram nhắn tin với Bot từ tài khoản @Hoangquy1104."
+echo "2. Truy cập web: https://$DOMAIN và đăng nhập bằng Gateway Token trên."
 echo "========================================================"
