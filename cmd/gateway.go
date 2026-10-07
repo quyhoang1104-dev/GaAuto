@@ -329,6 +329,29 @@ func runGateway() {
 	defer cleanupWorkstation()
 
 	// Create all agents — resolved lazily from database by the managed resolver.
+	if pgStores.Agents != nil {
+		seedCtx := store.WithTenantID(context.Background(), store.MasterTenantID)
+		if existingAgents, err := pgStores.Agents.List(seedCtx, ""); err == nil && len(existingAgents) == 0 {
+			defaultAgent := &store.AgentData{
+				TenantID:          store.MasterTenantID,
+				AgentKey:          "default",
+				DisplayName:       "GaAuto Assistant",
+				Provider:          "duckduckgo",
+				Model:             "duckduckgo-search",
+				ContextWindow:     128000,
+				MaxToolIterations: 10,
+				Workspace:         workspace,
+				AgentType:         store.AgentTypeOpen,
+				IsDefault:         true,
+				Status:            store.AgentStatusActive,
+			}
+			if createErr := pgStores.Agents.Create(seedCtx, defaultAgent); createErr != nil {
+				slog.Warn("failed to auto-seed default agent", "error", createErr)
+			} else {
+				slog.Info("auto-seeded default agent", "agent_key", "default", "provider", "duckduckgo")
+			}
+		}
+	}
 	agentRouter := agent.NewRouter()
 	if traceCollector != nil {
 		agentRouter.SetTraceCollector(traceCollector)

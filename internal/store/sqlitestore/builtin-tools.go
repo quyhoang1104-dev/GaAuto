@@ -49,13 +49,13 @@ func (s *SQLiteBuiltinToolStore) Get(ctx context.Context, name string) (*store.B
 }
 
 func (s *SQLiteBuiltinToolStore) GetSettings(ctx context.Context, name string) (json.RawMessage, error) {
-	var settings json.RawMessage
+	var settings []byte
 	err := s.db.QueryRowContext(ctx,
 		`SELECT settings FROM builtin_tools WHERE name = ?`, name).Scan(&settings)
 	if err != nil {
 		return nil, err
 	}
-	return settings, nil
+	return json.RawMessage(settings), nil
 }
 
 func (s *SQLiteBuiltinToolStore) Update(ctx context.Context, name string, updates map[string]any) error {

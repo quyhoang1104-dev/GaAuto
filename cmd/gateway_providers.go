@@ -202,6 +202,10 @@ func registerProviders(registry *providers.Registry, cfg *config.Config, modelRe
 	if cfg.Providers.ACP.Binary != "" {
 		registerACPFromConfig(registry, cfg.Providers.ACP, configuredShellDenyGroups(cfg))
 	}
+
+	// Built-in DuckDuckGo assistant provider — always available without external API keys.
+	registry.Register(providers.NewDuckDuckGoAssistantProvider())
+	slog.Info("registered provider", "name", "duckduckgo")
 }
 
 // buildMCPServerLookup creates an MCPServerLookup from an MCPServerStore.
