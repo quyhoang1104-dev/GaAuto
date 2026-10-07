@@ -89,7 +89,7 @@ cat << 'EOF' > "$APP_DIR/config.json"
   "channels": {
     "telegram": {
       "enabled": true,
-      "token": "8509298177:AAEFohJJLYoVxsN8ilmS2Gok8Qf00WEfp3A",
+      "token": "8509299177:AAEofhJJLYoVxsN0Hh5ZGbH2QfOOWEFpb3A",
       "dm_policy": "allowlist",
       "allow_from": [
         "@Hoangquy1104"
@@ -152,8 +152,7 @@ sudo certbot --nginx -d "$DOMAIN" -d "www.$DOMAIN" --non-interactive --agree-tos
 # 8. Start Docker Containers
 echo "--> [8/8] Khởi chạy các container GoClaw & PostgreSQL..."
 cd "$APP_DIR"
-docker compose -f docker-compose.yml -f docker-compose.postgres.yml -f docker-compose.prod.yml pull
-docker compose -f docker-compose.yml -f docker-compose.postgres.yml -f docker-compose.prod.yml up -d
+docker compose -f docker-compose.yml -f docker-compose.postgres.yml -f docker-compose.prod.yml up -d --build
 
 echo ""
 echo "========================================================"

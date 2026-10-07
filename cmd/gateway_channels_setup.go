@@ -27,11 +27,12 @@ import (
 	"github.com/nextlevelbuilder/goclaw/pkg/protocol"
 )
 
-// registerConfigChannels registers config-based channels as fallback when no DB instances are loaded.
+// registerConfigChannels registers config-based channels as fallback when no DB instances are loaded for a given channel name.
 // audioMgr is optional (nil = STT disabled for channels).
-func registerConfigChannels(cfg *config.Config, channelMgr *channels.Manager, msgBus *bus.MessageBus, pgStores *store.Stores, instanceLoader *channels.InstanceLoader, audioMgr *audio.Manager) {
-	if instanceLoader != nil {
-		return
+func registerConfigChannels(cfg *config.Config, channelMgr *channels.Manager, msgBus *bus.MessageBus, pgStores *store.Stores, _ *channels.InstanceLoader, audioMgr *audio.Manager) {
+	alreadyLoaded := func(name string) bool {
+		_, exists := channelMgr.GetChannel(name)
+		return exists
 	}
 
 	recordMissingConfig := func(name, detail string) {
@@ -45,7 +46,7 @@ func registerConfigChannels(cfg *config.Config, channelMgr *channels.Manager, ms
 		))
 	}
 
-	if cfg.Channels.Telegram.Enabled {
+	if cfg.Channels.Telegram.Enabled && !alreadyLoaded(channels.TypeTelegram) {
 		if cfg.Channels.Telegram.Token == "" {
 			recordMissingConfig(channels.TypeTelegram, "Set channels.telegram.token in config.")
 		} else if tg, err := telegram.New(cfg.Channels.Telegram, msgBus, pgStores.Pairing, audioMgr); err != nil {
@@ -57,7 +58,7 @@ func registerConfigChannels(cfg *config.Config, channelMgr *channels.Manager, ms
 		}
 	}
 
-	if cfg.Channels.Discord.Enabled {
+	if cfg.Channels.Discord.Enabled && !alreadyLoaded(channels.TypeDiscord) {
 		if cfg.Channels.Discord.Token == "" {
 			recordMissingConfig(channels.TypeDiscord, "Set channels.discord.token in config.")
 		} else if dc, err := discord.New(cfg.Channels.Discord, msgBus, nil, nil, nil, nil, audioMgr); err != nil {
@@ -69,7 +70,7 @@ func registerConfigChannels(cfg *config.Config, channelMgr *channels.Manager, ms
 		}
 	}
 
-	if cfg.Channels.WhatsApp.Enabled {
+	if cfg.Channels.WhatsApp.Enabled && !alreadyLoaded(channels.TypeWhatsApp) {
 		waDialect := "pgx"
 		if strings.Contains(fmt.Sprintf("%T", pgStores.DB.Driver()), "sqlite") {
 			waDialect = "sqlite3"
@@ -84,7 +85,7 @@ func registerConfigChannels(cfg *config.Config, channelMgr *channels.Manager, ms
 		}
 	}
 
-	if cfg.Channels.Zalo.Enabled {
+	if cfg.Channels.Zalo.Enabled && !alreadyLoaded(channels.TypeZaloOA) {
 		if cfg.Channels.Zalo.Token == "" {
 			recordMissingConfig(channels.TypeZaloOA, "Set channels.zalo.token in config.")
 		} else if z, err := zalo.New(cfg.Channels.Zalo, msgBus, pgStores.Pairing); err != nil {
@@ -96,7 +97,7 @@ func registerConfigChannels(cfg *config.Config, channelMgr *channels.Manager, ms
 		}
 	}
 
-	if cfg.Channels.ZaloPersonal.Enabled {
+	if cfg.Channels.ZaloPersonal.Enabled && !alreadyLoaded(channels.TypeZaloPersonal) {
 		zp, err := zalopersonal.New(cfg.Channels.ZaloPersonal, msgBus, pgStores.Pairing, nil)
 		if err != nil {
 			channelMgr.RecordFailure(channels.TypeZaloPersonal, "", err)
@@ -107,7 +108,7 @@ func registerConfigChannels(cfg *config.Config, channelMgr *channels.Manager, ms
 		}
 	}
 
-	if cfg.Channels.Slack.Enabled {
+	if cfg.Channels.Slack.Enabled && !alreadyLoaded(channels.TypeSlack) {
 		switch {
 		case cfg.Channels.Slack.BotToken == "":
 			recordMissingConfig(channels.TypeSlack, "Set channels.slack.bot_token in config.")
@@ -125,7 +126,7 @@ func registerConfigChannels(cfg *config.Config, channelMgr *channels.Manager, ms
 		}
 	}
 
-	if cfg.Channels.Feishu.Enabled {
+	if cfg.Channels.Feishu.Enabled && !alreadyLoaded(channels.TypeFeishu) {
 		if cfg.Channels.Feishu.AppID == "" {
 			recordMissingConfig(channels.TypeFeishu, "Set channels.feishu.app_id in config.")
 		} else {

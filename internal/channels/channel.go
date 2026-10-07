@@ -560,14 +560,14 @@ func (c *BaseChannel) IsAllowed(senderID string) bool {
 			allowedUser = trimmed[idx+1:]
 		}
 
-		// Support either side using "id|username" compound form.
-		if senderID == allowed ||
-			idPart == allowed ||
-			senderID == trimmed ||
-			idPart == trimmed ||
-			idPart == allowedID ||
-			(allowedUser != "" && senderID == allowedUser) ||
-			(userPart != "" && (userPart == allowed || userPart == trimmed || userPart == allowedUser)) {
+		// Support either side using "id|username" compound form (case-insensitive for usernames).
+		if strings.EqualFold(senderID, allowed) ||
+			strings.EqualFold(idPart, allowed) ||
+			strings.EqualFold(senderID, trimmed) ||
+			strings.EqualFold(idPart, trimmed) ||
+			strings.EqualFold(idPart, allowedID) ||
+			(allowedUser != "" && strings.EqualFold(senderID, allowedUser)) ||
+			(userPart != "" && (strings.EqualFold(userPart, allowed) || strings.EqualFold(userPart, trimmed) || strings.EqualFold(userPart, allowedUser))) {
 			return true
 		}
 	}
